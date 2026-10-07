@@ -1,0 +1,20 @@
+---
+- name: Lock convoy reproducer
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Wait until the shared completion time
+      ansible.builtin.command:
+        argv:
+          - python3
+          - -c
+          - |
+            import sys, time
+            time.sleep(max(0, int(sys.argv[1]) - int(time.time())))
+          - "{{ finish_epoch }}"
+      changed_when: false
+
+    - name: Generate one host result
+      ansible.builtin.debug:
+        msg: "Job released at {{ finish_epoch }}"
